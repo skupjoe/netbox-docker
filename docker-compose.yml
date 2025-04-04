@@ -55,7 +55,7 @@ services:
       <<: *logging
 
   postgres:
-    image: docker.io/postgres:12-alpine
+    image: docker.io/postgres:13-alpine
     container_name: netbox-postgres
     hostname: netbox-postgres
     restart: always
