@@ -20,7 +20,6 @@ services:
       - ./reports:/etc/netbox/reports
       - ./scripts:/etc/netbox/scripts
       - ./media:/opt/netbox/netbox/media
-      # - ./static:/opt/netbox/netbox/static
     logging: &logging
       options:
         max-size: 5m
