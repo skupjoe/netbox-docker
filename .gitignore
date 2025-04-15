@@ -13,3 +13,8 @@ configuration/ldap/*
 !configuration/plugins.py
 prometheus.yml
 super-linter.log
+
+# Bind mounts
+media/
+scripts/
+reports/
