@@ -94,7 +94,6 @@ services:
       <<: *logging
 
 volumes:
-
   netbox-postgres-data:
     driver: local
   netbox-redis-data:
