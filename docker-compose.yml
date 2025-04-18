@@ -1,6 +1,9 @@
 services:
   netbox: &netbox
-    image: docker.io/netboxcommunity/netbox:${VERSION-v4.2-3.2.0}
+    image: docker.io/netboxcommunity/netbox:${NETBOX_VERSION:-v4.2}
+    container_name: netbox
+    hostname: netbox
+    restart: always
     depends_on:
       - postgres
       - redis
@@ -13,12 +16,20 @@ services:
       timeout: 3s
       interval: 15s
     volumes:
-      - ./configuration:/etc/netbox/config:z,ro
-      - netbox-media-files:/opt/netbox/netbox/media:rw
-      - netbox-reports-files:/opt/netbox/netbox/reports:rw
-      - netbox-scripts-files:/opt/netbox/netbox/scripts:rw
+      - ./configuration:/etc/netbox/config
+      - ./reports:/etc/netbox/reports
+      - ./scripts:/etc/netbox/scripts
+      - ./media:/opt/netbox/netbox/media
+    logging: &logging
+      options:
+        max-size: 5m
+        max-file: '3'
+
   netbox-worker:
     <<: *netbox
+    container_name: netbox-worker
+    hostname: netbox-worker
+    restart: always
     depends_on:
       netbox:
         condition: service_healthy
@@ -31,8 +42,14 @@ services:
       start_period: 20s
       timeout: 3s
       interval: 15s
+    logging:
+      <<: *logging
+
   netbox-housekeeping:
     <<: *netbox
+    container_name: netbox-housekeeping
+    hostname: netbox-housekeeping
+    restart: always
     depends_on:
       netbox:
         condition: service_healthy
@@ -43,10 +60,16 @@ services:
       start_period: 20s
       timeout: 3s
       interval: 15s
+    logging:
+      <<: *logging
 
-  # postgres
   postgres:
-    image: docker.io/postgres:17-alpine
+    image: docker.io/postgres:16-alpine
+    container_name: netbox-postgres
+    hostname: netbox-postgres
+    restart: always
+    ports:
+      - 5444:5432
     healthcheck:
       test: pg_isready -q -t 2 -d $$POSTGRES_DB -U $$POSTGRES_USER
       start_period: 20s
@@ -56,10 +79,14 @@ services:
     env_file: env/postgres.env
     volumes:
       - netbox-postgres-data:/var/lib/postgresql/data
+    logging:
+      <<: *logging
 
-  # redis
   redis:
     image: docker.io/valkey/valkey:8.0-alpine
+    container_name: redis
+    hostname: redis
+    restart: always
     command:
       - sh
       - -c # this is to evaluate the $REDIS_PASSWORD from the env
@@ -73,8 +100,14 @@ services:
     env_file: env/redis.env
     volumes:
       - netbox-redis-data:/data
+    logging:
+      <<: *logging
+
   redis-cache:
     image: docker.io/valkey/valkey:8.0-alpine
+    container_name: redis-cache
+    hostname: redis-cache
+    restart: always
     command:
       - sh
       - -c # this is to evaluate the $REDIS_PASSWORD from the env
@@ -83,17 +116,13 @@ services:
     env_file: env/redis-cache.env
     volumes:
       - netbox-redis-cache-data:/data
+    logging:
+      <<: *logging
 
 volumes:
-  netbox-media-files:
-    driver: local
   netbox-postgres-data:
     driver: local
   netbox-redis-cache-data:
     driver: local
   netbox-redis-data:
-    driver: local
-  netbox-reports-files:
-    driver: local
-  netbox-scripts-files:
     driver: local
