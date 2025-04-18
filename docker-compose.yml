@@ -122,7 +122,7 @@ services:
 volumes:
   netbox-postgres-data:
     driver: local
-  netbox-redis-cache-data:
-    driver: local
   netbox-redis-data:
+    driver: local
+  netbox-redis-cache-data:
     driver: local
