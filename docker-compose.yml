@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   netbox: &netbox
     image: docker.io/netboxcommunity/netbox:${NETBOX_VERSION:-v3.5}
