@@ -25,8 +25,8 @@ services:
       - ./reports:/etc/netbox/reports
       - ./scripts:/etc/netbox/scripts
       - ./media:/opt/netbox/netbox/media
-    # environment:
-      # - NETBOX_DELETE_LEGACY_DATA=true
+    environment:
+      - NETBOX_DELETE_LEGACY_DATA=true
       # - RELEASE_CHECK_URL=http://0.0.0.0/
     logging: &logging
       options:
