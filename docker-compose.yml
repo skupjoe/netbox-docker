@@ -8,7 +8,6 @@ services:
       - postgres
       - redis
       - redis-cache
-      # - netbox-worker
     env_file: env/netbox.env
     user: 'unit:root'
     healthcheck:
@@ -17,8 +16,6 @@ services:
       interval: 15s
       test: "curl -f http://localhost:8080/api/ || exit 1"
     volumes:
-      # - ./startup_scripts:/opt/netbox/startup_scripts
-      # - ./initializers:/opt/netbox/initializers
       - ./configuration:/etc/netbox/config
       - ./reports:/etc/netbox/reports
       - ./scripts:/etc/netbox/scripts
